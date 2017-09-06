@@ -1,4 +1,4 @@
-all: ppmrw.c
+all: ppmrw.c ppmrw.h
 	gcc ppmrw.c -o ppmrw
 
 clean:

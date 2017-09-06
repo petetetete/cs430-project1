@@ -1,6 +1,5 @@
-#include <stdlib.h>
-#include <stdio.h>
-
+// Include ppmrw header file
+#include "ppmrw.h"
 
 int main(int argc, char *argv[]) {
 
