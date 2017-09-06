@@ -5,10 +5,12 @@ int main(int argc, char *argv[]) {
 
   // Check for the appropriate number of parameters
   if (argc != 4) {
-    printf("Usage: ppmrw convert_to_number input_file output_file\n");
-    printf("  convert_to_number: PPM format to convert to (3 or 6)\n");
-    printf("  input_file: input PPM file name\n");
-    printf("  output_file: out PPM file name\n");
+
+    // Print usage message to stderr because they mis-used the program
+    fprintf(stderr, "Usage: ppmrw convert_to_number input_file output_file\n"
+                    "  convert_to_number: PPM format to convert to (3 or 6)\n"
+                    "  input_file: input PPM file name\n"
+                    "  output_file: out PPM file name\n");
     return 1;
   }
 
@@ -19,7 +21,13 @@ int main(int argc, char *argv[]) {
 
   // Validate conversion number
   if (convertToFormat != 3 && convertToFormat != 6) {
-    printf("Error: Invalid PPM format number, use 3 or 6");
+    fprintf(stderr, "Error: Invalid PPM format number, use 3 or 6\n");
+    return 1;
+  }
+
+  FILE *inputFH;
+  if (!(inputFH = fopen(inputFName, "r"))) {
+    fprintf(stderr, "Error: No input file of name '%s' found\n", inputFName);
     return 1;
   }
 
