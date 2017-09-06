@@ -41,14 +41,17 @@ int getNextString(char *output, FILE *fileHandle) {
 
 int main(int argc, char *argv[]) {
 
-  // Check for the appropriate number of parameters
-  if (argc != 4) {
+  // Handle the -h help flag
+  // Use stdout and a return code of 0 because the program was used correctly
+  if (argc == 2 && strcmp(argv[1], "-h") == 0) {
+    fprintf(stdout, USAGE_MESSAGE);
+    return 0;
+  }
 
-    // Print usage message to stderr because they mis-used the program
-    fprintf(stderr, "Usage: ppmrw convert_to_number input_file output_file\n"
-                    "  convert_to_number: PPM format to convert to (3 or 6)\n"
-                    "  input_file: input PPM file name\n"
-                    "  output_file: out PPM file name\n");
+  // Check for the appropriate number of parameters
+  // Use stderr and a return code of 1 because the program was used incorrectly
+  if (argc != 4) {
+    fprintf(stderr, USAGE_MESSAGE);
     return 1;
   }
 

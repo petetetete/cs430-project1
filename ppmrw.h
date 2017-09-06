@@ -7,9 +7,17 @@
 // Numeric constants
 #define STRING_MAX_BUFFER 32
 
+// String constants
+#define USAGE_MESSAGE "\
+Usage: ppmrw convert_to_number input_file output_file\n\
+  convert_to_number: PPM format to convert to (3 or 6)\n\
+  input_file: input PPM file name\n\
+  output_file: out PPM file name\n"
+
 // Include standard libraries
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h> // isspace
 
 // Define types to be used in ppmrw.c 
