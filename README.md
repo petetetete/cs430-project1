@@ -5,5 +5,4 @@
 [INSERT USAGE INSTRUCTIONS]
 
 ## Author
-Peter Huettl
-[ph289@nau.edu](mailto:ph289@nau.edu)
+Peter Huettl - [ph289@nau.edu](mailto:ph289@nau.edu)
