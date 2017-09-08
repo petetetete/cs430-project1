@@ -129,15 +129,7 @@ int writePPM(PPMImage *image, FILE *file, int newFormat) {
 
 int main(int argc, char *argv[]) {
 
-  // Handle the -h help flag
-  // Use stdout and a return code of 0 because the program was used correctly
-  if (argc == 2 && strcmp(argv[1], "-h") == 0) {
-    fprintf(stdout, USAGE_MESSAGE);
-    return 0;
-  }
-
   // Check for the appropriate number of parameters
-  // Use stderr and a return code of 1 because the program was used incorrectly
   if (argc != 4) {
     fprintf(stderr, USAGE_MESSAGE);
     return 1;
