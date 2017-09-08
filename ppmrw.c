@@ -2,42 +2,82 @@
 #include "ppmrw.h"
 
 
-int getNextString(char *output, FILE *fileHandle) {
+int getNextString(char *output, FILE *file) {
 
   char symbol;
+  output[0] = 0; // Initialize input
+  int isComment = 0; // Flag as to whether or not we're looking at a comment
 
-  // Skip leading white space
+  // Skip leading white space and comments
   while (1) {
-    symbol = fgetc(fileHandle);
+    symbol = fgetc(file);
 
     // If we hit an EOF before a non-whitespace character
     if (symbol == EOF) {
       return NO_STRING_FOUND;
     }
 
-    // Save first non-whitespace character we hit
-    else if (!isspace(symbol)) {
-      snprintf(output, STRING_MAX_BUFFER, "%s%c", output, symbol);
-      break;
+    // Reset flag because we can no longer be in a comment
+    else if (symbol == '\n') {
+      isComment = 0;
+    }
+
+    // Save first non-whitespace character we hit that isn't in a comment
+    else if (!isspace(symbol) && !isComment) {
+
+      if (symbol == '#') {
+        isComment = 1;
+      }
+      else {
+        snprintf(output, STRING_MAX_BUFFER, "%s%c", output, symbol);
+        break;
+      }
+      
     }
   }
 
   // Copy all characters to the output until we hit another whitespace or EOF
-  while ((symbol = fgetc(fileHandle)) != EOF && !isspace(symbol)) {
-    sprintf(output, "%s%c", output, symbol);
+  while ((symbol = fgetc(file)) != EOF && !isspace(symbol)) {
+    snprintf(output, STRING_MAX_BUFFER, "%s%c", output, symbol);
   }
 
   // If we instantly hit EOF after skipping whitespace, there was no real string
-  if (symbol == EOF) {
+  if (symbol == EOF && output[0] == '\0') {
     return NO_STRING_FOUND;
   }
-
-  // String successfully found
   else {
     return 0;
   }
 
 }
+
+
+int readPPM(PPMImage *output, FILE *file) {
+
+  // Temporary variables used to store strings that are found
+  char width[STRING_MAX_BUFFER];
+  char height[STRING_MAX_BUFFER];
+  char maxColorValue[STRING_MAX_BUFFER];
+
+  // Get meta data from PPM file
+  getNextString(output->magicNumber, file);
+  getNextString(width, file);
+  getNextString(height, file);
+  getNextString(maxColorValue, file);
+
+  // TODO: Handle errors of getting strings, and ensuring that data is accurate
+
+  // Save strings into PPMImage object
+  output->width = atoi(width);
+  output->height = atoi(height);
+  output->maxColorValue = atoi(maxColorValue);
+
+  // Allocate memory for pixel array on object
+  output->pixels = malloc(output->width * output->height * 4);
+
+  return 0;
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -62,7 +102,6 @@ int main(int argc, char *argv[]) {
 
   // Initialize variables to be used in program
   FILE *inputFH;
-  char *magicNumber;
 
   // Validate conversion number
   if (convertToFormat != 3 && convertToFormat != 6) {
@@ -76,11 +115,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Test finding magic number
-  magicNumber = malloc(sizeof(char) * STRING_MAX_BUFFER);
-  getNextString(magicNumber, inputFH);
-  printf(magicNumber);
-
+  PPMImage *input = malloc(sizeof(PPMImage));
+  readPPM(input, inputFH);
 
   // Clean up program
   fclose(inputFH);

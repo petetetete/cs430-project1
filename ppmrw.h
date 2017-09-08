@@ -22,9 +22,18 @@ Usage: ppmrw convert_to_number input_file output_file\n\
 
 // Define types to be used in ppmrw.c 
 typedef struct Pixel Pixel;
+typedef struct PPMImage PPMImage;
 
 struct Pixel {
   unsigned char r, g, b, a;
+};
+
+struct PPMImage {
+	char magicNumber[2];
+	int width;
+	int height;
+	int maxColorValue;
+	Pixel* pixels;
 };
 
 /**
