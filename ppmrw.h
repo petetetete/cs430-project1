@@ -40,10 +40,31 @@ struct PPMImage {
  * Gets next series of ASCII characters from a file handle
  * while ignoring leading whitespace
  * 
- * @param  output     character pointer to memory to save output
- * @param  fileHandle file to be parsed for next string
- * @return            success status of function, NO_STRING_FOUND on error
+ * @param  output  character pointer to memory to save output
+ * @param  file    file to be parsed for next string
+ * @return         success status of function, NO_STRING_FOUND on error
  */
-int getNextString(char *output, FILE *fileHandle);
+int getNextString(char *output, FILE *file);
+
+/**
+ * Reads in a file handle and outputs a PPMImage structure with
+ * the appropriate meta and pixel data stored within
+ *
+ * @param  output  pointer to a PPMImage structure with the image data
+ * @param  file    file to be read into memory
+ * @return         success status of function, TODO: Add error codes
+ */
+int readPPM(PPMImage *output, FILE *file);
+
+/**
+ * Writes the image data from the PPMImage structure to the given file
+ * handle, including appropriate meta data
+ *
+ * @param  image      pointer to a PPMImage structure with the image data
+ * @param  file       file to be written to
+ * @param  newFormat  the PPM format to write the file
+ * @return            success status of function, TODO: Add error codes
+ */
+int writePPM(PPMImage *image, FILE *file, int newFormat);
 
 #endif  // PPMRW_H

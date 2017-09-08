@@ -59,6 +59,12 @@ int readPPM(PPMImage *output, FILE *file) {
   char height[STRING_MAX_BUFFER];
   char maxColorValue[STRING_MAX_BUFFER];
 
+  // Temporary variables to store the r, g, b values in
+  char red[STRING_MAX_BUFFER];
+  char green[STRING_MAX_BUFFER];
+  char blue[STRING_MAX_BUFFER];
+  char alpha[STRING_MAX_BUFFER];
+
   // Get meta data from PPM file
   getNextString(output->magicNumber, file);
   getNextString(width, file);
@@ -73,9 +79,51 @@ int readPPM(PPMImage *output, FILE *file) {
   output->maxColorValue = atoi(maxColorValue);
 
   // Allocate memory for pixel array on object
-  output->pixels = malloc(output->width * output->height * 4);
+  output->pixels = malloc(output->width*output->height*4);
+
+  // If the magic number is P6, read the binary straight into the array
+  if (strcmp(output->magicNumber, "P6") == 0) {
+    fread(output->pixels, output->width*output->height*4, 1, file);
+  }
+  else {
+    for (int i = 0; i < output->width*output->height; i++) {
+
+      getNextString(red, file);
+      getNextString(green, file);
+      getNextString(blue, file);
+      getNextString(alpha, file);
+
+      output->pixels[i].r = atoi(red);
+      output->pixels[i].g = atoi(green);
+      output->pixels[i].b = atoi(blue);
+      output->pixels[i].a = atoi(alpha);
+    }
+  }
 
   return 0;
+}
+
+
+int writePPM(PPMImage *image, FILE *file, int newFormat) {
+
+  // Populate header
+  fprintf(file, "P%d\n", newFormat);
+  fprintf(file, "%d %d\n", image->width, image->height);
+  fprintf(file, "%d\n", image->maxColorValue);
+
+  if (newFormat == 6) {
+    fwrite(image->pixels, image->width*image->height*4, 1, file);
+  }
+  else {
+    for (int i = 0; i < image->width*image->height; i++) {
+      fprintf(file, "%d %d %d %d\n",
+        image->pixels[i].r,
+        image->pixels[i].g,
+        image->pixels[i].b,
+        image->pixels[i].a);
+    }
+  }
+
 }
 
 
@@ -102,6 +150,7 @@ int main(int argc, char *argv[]) {
 
   // Initialize variables to be used in program
   FILE *inputFH;
+  FILE *outputFH;
 
   // Validate conversion number
   if (convertToFormat != 3 && convertToFormat != 6) {
@@ -118,8 +167,12 @@ int main(int argc, char *argv[]) {
   PPMImage *input = malloc(sizeof(PPMImage));
   readPPM(input, inputFH);
 
+  outputFH = fopen(outputFName, "w");
+  writePPM(input, outputFH, convertToFormat);
+
   // Clean up program
   fclose(inputFH);
+  fclose(outputFH);
 
   return 0;
 }
