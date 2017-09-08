@@ -22,4 +22,4 @@ ppmrw 3 input.ppm output.ppm
 ## Author
 Peter Huettl - [ph289@nau.edu](mailto:ph289@nau.edu)
 
-![test](examples/p3.ppm)
+![test](examples/in-p3.png)
