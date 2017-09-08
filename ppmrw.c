@@ -1,12 +1,12 @@
 // Include ppmrw header file
 #include "ppmrw.h"
 
-
+/* Detailed Doxygen function comment in header file */
 int getNextString(char *output, FILE *file) {
 
-  char symbol;
   output[0] = 0; // Initialize input
-  int isComment = 0; // Flag as to whether or not we're looking at a comment
+  int isComment = 0; // Flag used to indicate comments
+  char symbol;
 
   // Skip leading white space and comments
   while (1) {
@@ -24,15 +24,13 @@ int getNextString(char *output, FILE *file) {
 
     // Save first non-whitespace character we hit that isn't in a comment
     else if (!isspace(symbol) && !isComment) {
-
       if (symbol == '#') {
-        isComment = 1;
+        isComment = 1; // Enable comment flag
       }
       else {
         snprintf(output, STRING_MAX_BUFFER, "%s%c", output, symbol);
         break;
       }
-      
     }
   }
 
@@ -48,13 +46,13 @@ int getNextString(char *output, FILE *file) {
   else {
     return 0;
   }
-
 }
 
-
+/* Detailed Doxygen function comment in header file */
 int readPPM(PPMImage *output, FILE *file) {
 
   // Temporary variables used to store strings that are found
+  char magicNumber[2];
   char width[STRING_MAX_BUFFER];
   char height[STRING_MAX_BUFFER];
   char maxColorValue[STRING_MAX_BUFFER];
@@ -66,7 +64,7 @@ int readPPM(PPMImage *output, FILE *file) {
   char alpha[STRING_MAX_BUFFER];
 
   // Get meta data from PPM file
-  getNextString(output->magicNumber, file);
+  getNextString(magicNumber, file);
   getNextString(width, file);
   getNextString(height, file);
   getNextString(maxColorValue, file);
@@ -82,7 +80,7 @@ int readPPM(PPMImage *output, FILE *file) {
   output->pixels = malloc(output->width*output->height*4);
 
   // If the magic number is P6, read the binary straight into the array
-  if (strcmp(output->magicNumber, "P6") == 0) {
+  if (strcmp(magicNumber, "P6") == 0) {
     fread(output->pixels, output->width*output->height*4, 1, file);
   }
   else {
@@ -103,7 +101,7 @@ int readPPM(PPMImage *output, FILE *file) {
   return 0;
 }
 
-
+/* Detailed Doxygen function comment in header file */
 int writePPM(PPMImage *image, FILE *file, int newFormat) {
 
   // Populate header
@@ -123,7 +121,6 @@ int writePPM(PPMImage *image, FILE *file, int newFormat) {
         image->pixels[i].a);
     }
   }
-
 }
 
 
@@ -143,6 +140,7 @@ int main(int argc, char *argv[]) {
   // Initialize variables to be used in program
   FILE *inputFH;
   FILE *outputFH;
+  int errorStatus;
 
   // Validate conversion number
   if (convertToFormat != 3 && convertToFormat != 6) {
@@ -150,20 +148,31 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  // Validate input file name
+  // Handle input file errors
   if (!(inputFH = fopen(inputFName, "r"))) {
-    fprintf(stderr, "Error: No input file of name '%s' found\n", inputFName);
+    fprintf(stderr, "Error: Input file '%s' could not be found\n", inputFName);
     return 1;
   }
 
+  // Read PPM into the input structure
   PPMImage *input = malloc(sizeof(PPMImage));
-  readPPM(input, inputFH);
-
-  outputFH = fopen(outputFName, "w");
-  writePPM(input, outputFH, convertToFormat);
-
-  // Clean up program
+  errorStatus = readPPM(input, inputFH);
   fclose(inputFH);
+
+  // Handle reading errors
+  if (errorStatus != 0) {
+    fprintf(stderr, "Error: Malformed input PPM image\n");
+    return 1;
+  }
+
+  // Handle open errors on output file
+  if (!(outputFH = fopen(outputFName, "w"))) {
+    fprintf(stderr, "Error: Unable to open '%s' for writing\n", outputFName);
+    return 1;
+  }
+
+  // Write out PPM to the output file
+  writePPM(input, outputFH, convertToFormat);
   fclose(outputFH);
 
   return 0;

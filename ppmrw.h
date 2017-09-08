@@ -37,8 +37,8 @@ struct PPMImage {
 };
 
 /**
- * Gets next series of ASCII characters from a file handle
- * while ignoring leading whitespace
+ * Helper method used to get the next series of ASCII 
+ * characters from a file handle while ignoring leading whitespace
  * 
  * @param  output  character pointer to memory to save output
  * @param  file    file to be parsed for next string
