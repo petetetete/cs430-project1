@@ -18,8 +18,11 @@ Then, depending on your operating system/environment, you can run the program by
 ppmrw 3 input.ppm output.ppm
 ```
 
+## Examples
+The following ASCII PPM image (P3) was ran through the program and converted to the adjacent binary PPM image (P6).
+
+![Input P3](examples/in-3.png | width=200)
+![Input P3](examples/out-3to6.png | width=200)
 
 ## Author
 Peter Huettl - [ph289@nau.edu](mailto:ph289@nau.edu)
-
-![test](examples/in-p3.png)
