@@ -29,11 +29,10 @@ struct Pixel {
 };
 
 struct PPMImage {
-	char magicNumber[2];
-	int width;
-	int height;
-	int maxColorValue;
-	Pixel* pixels;
+  int width;
+  int height;
+  int maxColorValue;
+  Pixel* pixels;
 };
 
 /**
