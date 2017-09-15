@@ -110,7 +110,7 @@ int readPPM(PPMImage *output, FILE *file) {
 
   // If the magic number is P6, read the binary straight into the array
   if (strcmp(magicNumber, "P6") == 0) {
-    fread(output->pixels, output->width*output->height*4, 1, file);
+    fread(output->pixels, sizeof(Pixel), output->width*output->height, file);
   }
   else {
     for (int i = 0; i < output->width*output->height; i++) {
@@ -140,7 +140,7 @@ int writePPM(PPMImage *image, FILE *file, int newFormat) {
 
   // Print out the pixel data
   if (newFormat == 6) {
-    fwrite(image->pixels, sizeof(Pixel)*image->width*image->height, 1, file);
+    fwrite(image->pixels, sizeof(Pixel), image->width*image->height, file);
   }
   else {
     for (int i = 0; i < image->width*image->height; i++) {

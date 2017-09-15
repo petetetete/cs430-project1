@@ -25,6 +25,7 @@ The following ASCII PPM image (P3) was ran through the program and converted to 
 
 ## Known Issues/Strange Behavior
 * A PPM file with a valid header but incomplete/missing pixel data will create a valid PPM file of the requested format, but the pixel data will simply be filled with 0's. This results in an all black image of the height and width outlined in the input header.
+* When converting any format to P6, my home computer creates an image in which the pixel colors are all offset, creating a warped image, but my work computer converts the image properly. This is why I've included an example of P3 -> P6 that was taken from my work computer, to demonstrate.
 
 ## Author
 Peter Huettl - [ph289@nau.edu](mailto:ph289@nau.edu)
