@@ -23,5 +23,8 @@ The following ASCII PPM image (P3) was ran through the program and converted to 
 
 <img alt="Input P3" src="examples/in-3.png" width="350"> <img alt="Output O6" src="examples/out-3to6.png" width="350">
 
+## Known Issues/Strange Behavior
+* A PPM file with a valid header but incomplete/missing pixel data will create a valid PPM file of the requested format, but the pixel data will simply be filled with 0's. This results in an all black image of the height and width outlined in the input header.
+
 ## Author
 Peter Huettl - [ph289@nau.edu](mailto:ph289@nau.edu)
