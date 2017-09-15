@@ -3,6 +3,7 @@
 
 // Error code constants
 #define NO_STRING_FOUND -1
+#define MALFORMED_HEADER -2
 
 // Numeric constants
 #define STRING_MAX_BUFFER 32
@@ -51,7 +52,7 @@ int getNextString(char *output, FILE *file);
  *
  * @param  output  pointer to a PPMImage structure with the image data
  * @param  file    file to be read into memory
- * @return         success status of function, TODO: Add error codes
+ * @return         success status of function, MALFORMED_HEADER on header error
  */
 int readPPM(PPMImage *output, FILE *file);
 
@@ -62,7 +63,7 @@ int readPPM(PPMImage *output, FILE *file);
  * @param  image      pointer to a PPMImage structure with the image data
  * @param  file       file to be written to
  * @param  newFormat  the PPM format to write the file
- * @return            success status of function, TODO: Add error codes
+ * @return            success status of function
  */
 int writePPM(PPMImage *image, FILE *file, int newFormat);
 

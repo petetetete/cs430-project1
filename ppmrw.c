@@ -1,7 +1,8 @@
 // Include ppmrw header file
 #include "ppmrw.h"
 
-/* Detailed Doxygen-style function comment in header file */
+
+/* Detailed JavaDocs-style function comment in header file */
 int getNextString(char *output, FILE *file) {
 
   output[0] = 0; // Initialize input
@@ -48,7 +49,8 @@ int getNextString(char *output, FILE *file) {
   }
 }
 
-/* Detailed Doxygen-style function comment in header file */
+
+/* Detailed JavaDocs-style function comment in header file */
 int readPPM(PPMImage *output, FILE *file) {
 
   int errorStatus;
@@ -70,28 +72,26 @@ int readPPM(PPMImage *output, FILE *file) {
   if (errorStatus == NO_STRING_FOUND ||
       (strcmp(magicNumber, "P3") != 0 &&
       strcmp(magicNumber, "P6") != 0)) {
-    return 1;
+    return MALFORMED_HEADER;
   }
 
   // Get and check validity of width
   errorStatus = getNextString(width, file);
   if (errorStatus == NO_STRING_FOUND) {
-    return 1;
+    return MALFORMED_HEADER;
   }
 
   // Get and check validity of height
   errorStatus = getNextString(height, file);
   if (errorStatus == NO_STRING_FOUND) {
-    return 1;
+    return MALFORMED_HEADER;
   }
 
   // Get and check validity of max color value
   errorStatus = getNextString(maxColorValue, file);
   if (errorStatus == NO_STRING_FOUND) {
-    return 1;
+    return MALFORMED_HEADER;
   }
-
-  // TODO: Handle errors of getting strings, and ensuring that data is accurate
 
   // Save strings into PPMImage object
   output->width = atoi(width);
@@ -102,7 +102,7 @@ int readPPM(PPMImage *output, FILE *file) {
   if (output->width == 0 ||
       output->height == 0 ||
       output->maxColorValue == 0) {
-    return 1;
+    return MALFORMED_HEADER;
   }
 
   // Allocate memory for pixel array on object
@@ -129,7 +129,8 @@ int readPPM(PPMImage *output, FILE *file) {
   return 0;
 }
 
-/* Detailed Doxygen-style function comment in header file */
+
+/* Detailed JavaDocs-style function comment in header file */
 int writePPM(PPMImage *image, FILE *file, int newFormat) {
 
   // Populate header
@@ -137,6 +138,7 @@ int writePPM(PPMImage *image, FILE *file, int newFormat) {
   fprintf(file, "%d %d\n", image->width, image->height);
   fprintf(file, "%d\n", image->maxColorValue);
 
+  // Print out the pixel data
   if (newFormat == 6) {
     fwrite(image->pixels, sizeof(Pixel)*image->width*image->height, 1, file);
   }
@@ -149,6 +151,8 @@ int writePPM(PPMImage *image, FILE *file, int newFormat) {
         image->pixels[i].a);
     }
   }
+
+  return 0;
 }
 
 
@@ -188,7 +192,7 @@ int main(int argc, char *argv[]) {
   fclose(inputFH);
 
   // Handle reading errors
-  if (errorStatus != 0) {
+  if (errorStatus == MALFORMED_HEADER) {
     fprintf(stderr, "Error: Malformed input PPM image header\n");
     return 1;
   }
