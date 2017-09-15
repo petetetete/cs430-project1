@@ -1,7 +1,7 @@
 // Include ppmrw header file
 #include "ppmrw.h"
 
-/* Detailed Doxygen function comment in header file */
+/* Detailed Doxygen-style function comment in header file */
 int getNextString(char *output, FILE *file) {
 
   output[0] = 0; // Initialize input
@@ -48,8 +48,10 @@ int getNextString(char *output, FILE *file) {
   }
 }
 
-/* Detailed Doxygen function comment in header file */
+/* Detailed Doxygen-style function comment in header file */
 int readPPM(PPMImage *output, FILE *file) {
+
+  int errorStatus;
 
   // Temporary variables used to store strings that are found
   char magicNumber[2];
@@ -63,11 +65,31 @@ int readPPM(PPMImage *output, FILE *file) {
   char blue[STRING_MAX_BUFFER];
   char alpha[STRING_MAX_BUFFER];
 
-  // Get meta data from PPM file
-  getNextString(magicNumber, file);
-  getNextString(width, file);
-  getNextString(height, file);
-  getNextString(maxColorValue, file);
+  // Get and check validity of magic number
+  errorStatus = getNextString(magicNumber, file);
+  if (errorStatus == NO_STRING_FOUND ||
+      (strcmp(magicNumber, "P3") != 0 &&
+      strcmp(magicNumber, "P6") != 0)) {
+    return 1;
+  }
+
+  // Get and check validity of width
+  errorStatus = getNextString(width, file);
+  if (errorStatus == NO_STRING_FOUND) {
+    return 1;
+  }
+
+  // Get and check validity of height
+  errorStatus = getNextString(height, file);
+  if (errorStatus == NO_STRING_FOUND) {
+    return 1;
+  }
+
+  // Get and check validity of max color value
+  errorStatus = getNextString(maxColorValue, file);
+  if (errorStatus == NO_STRING_FOUND) {
+    return 1;
+  }
 
   // TODO: Handle errors of getting strings, and ensuring that data is accurate
 
@@ -76,8 +98,15 @@ int readPPM(PPMImage *output, FILE *file) {
   output->height = atoi(height);
   output->maxColorValue = atoi(maxColorValue);
 
+  // Catch invalid inputs (strings) and just non-sensical dimensions 
+  if (output->width == 0 ||
+      output->height == 0 ||
+      output->maxColorValue == 0) {
+    return 1;
+  }
+
   // Allocate memory for pixel array on object
-  output->pixels = malloc(output->width*output->height*4);
+  output->pixels = malloc(sizeof(Pixel)*output->width*output->height);
 
   // If the magic number is P6, read the binary straight into the array
   if (strcmp(magicNumber, "P6") == 0) {
@@ -85,7 +114,6 @@ int readPPM(PPMImage *output, FILE *file) {
   }
   else {
     for (int i = 0; i < output->width*output->height; i++) {
-
       getNextString(red, file);
       getNextString(green, file);
       getNextString(blue, file);
@@ -101,7 +129,7 @@ int readPPM(PPMImage *output, FILE *file) {
   return 0;
 }
 
-/* Detailed Doxygen function comment in header file */
+/* Detailed Doxygen-style function comment in header file */
 int writePPM(PPMImage *image, FILE *file, int newFormat) {
 
   // Populate header
@@ -110,7 +138,7 @@ int writePPM(PPMImage *image, FILE *file, int newFormat) {
   fprintf(file, "%d\n", image->maxColorValue);
 
   if (newFormat == 6) {
-    fwrite(image->pixels, image->width*image->height*4, 1, file);
+    fwrite(image->pixels, sizeof(Pixel)*image->width*image->height, 1, file);
   }
   else {
     for (int i = 0; i < image->width*image->height; i++) {
@@ -161,7 +189,7 @@ int main(int argc, char *argv[]) {
 
   // Handle reading errors
   if (errorStatus != 0) {
-    fprintf(stderr, "Error: Malformed input PPM image\n");
+    fprintf(stderr, "Error: Malformed input PPM image header\n");
     return 1;
   }
 
